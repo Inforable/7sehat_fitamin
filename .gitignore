@@ -1,0 +1,17 @@
+# File-file umum yang harus diabaikan
+.env
+.env.*
+*.log
+
+# Aturan untuk Backend (Python/Flask)
+/backend/venv/
+/backend/__pycache__/
+/backend/*.pyc
+
+# Aturan untuk Frontend (Node.js/Next.js)
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.env.local
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
