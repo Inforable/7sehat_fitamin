@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Sidebar from '../../components/Sidebar'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [activeMenu, setActiveMenu] = useState('dashboard')
 
-  // Data dummy - nanti bisa diganti dengan data dari API
+  // Placeholder user data
   const userData = {
     name: "Nama Pengguna",
     bmi: {
@@ -28,17 +29,12 @@ export default function DashboardPage() {
     }
   }
 
-  const handleLogout = () => {
-    router.push('/login')
-  }
-
   const handleProfileClick = () => {
     alert('Menuju halaman profil pengguna.')
   }
 
   const handleMenuClick = (menu: string) => {
     setActiveMenu(menu)
-    console.log(`Navigate to ${menu}`)
   }
 
   const handleBMIHistoryClick = () => {
@@ -57,116 +53,8 @@ export default function DashboardPage() {
         minHeight: "100vh"
       }}
     >
-      {/* Sidebar - Same as before */}
-      <aside 
-        className="w-64 bg-white bg-opacity-20 backdrop-blur-md text-white flex flex-col"
-        style={{ boxShadow: "4px 0 10px rgba(0,0,0,0.2)" }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white border-opacity-30">
-          <h1 className="text-2xl font-bold tracking-wide">
-            FitAaminn
-          </h1>
-          <button 
-            onClick={handleLogout}
-            className="text-white hover:text-red-400 transition-colors" 
-            title="Logout"
-            aria-label="Logout"
-          >
-            <i className="fas fa-sign-out-alt text-xl"></i>
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto mt-6 px-4 space-y-4">
-          <button
-            onClick={() => handleMenuClick('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold shadow-md transition-colors ${
-              activeMenu === 'dashboard' 
-                ? 'bg-white bg-opacity-30' 
-                : 'hover:bg-white hover:bg-opacity-20'
-            }`}
-          >
-            <i className="fas fa-tachometer-alt text-lg"></i>
-            <span>Dashboard</span>
-          </button>
-          
-          <button
-            onClick={() => handleMenuClick('kesehatan')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeMenu === 'kesehatan' 
-                ? 'bg-white bg-opacity-30' 
-                : 'hover:bg-white hover:bg-opacity-20'
-            }`}
-          >
-            <i className="fas fa-heartbeat text-lg"></i>
-            <span>Kesehatan</span>
-          </button>
-          
-          <button
-            onClick={() => handleMenuClick('nutrisi')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeMenu === 'nutrisi' 
-                ? 'bg-white bg-opacity-30' 
-                : 'hover:bg-white hover:bg-opacity-20'
-            }`}
-          >
-            <i className="fas fa-apple-alt text-lg"></i>
-            <span>Nutrisi</span>
-          </button>
-          
-          <button
-            onClick={() => handleMenuClick('aktivitas')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeMenu === 'aktivitas' 
-                ? 'bg-white bg-opacity-30' 
-                : 'hover:bg-white hover:bg-opacity-20'
-            }`}
-          >
-            <i className="fas fa-running text-lg"></i>
-            <span>Aktivitas</span>
-          </button>
-          
-          <button
-            onClick={() => handleMenuClick('pengaturan')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeMenu === 'pengaturan' 
-                ? 'bg-white bg-opacity-30' 
-                : 'hover:bg-white hover:bg-opacity-20'
-            }`}
-          >
-            <i className="fas fa-cog text-lg"></i>
-            <span>Pengaturan</span>
-          </button>
-        </nav>
-
-        {/* Profile Section */}
-        <div className="px-6 py-5 border-t border-white border-opacity-30">
-          <button 
-            onClick={handleProfileClick}
-            className="w-full flex items-center gap-3 bg-white bg-opacity-30 hover:bg-opacity-50 rounded-lg px-4 py-3 transition-colors"
-            title="Profil pengguna"
-            aria-label="Profil pengguna"
-          >
-            <img 
-              src="" 
-              alt="Foto profil pengguna" 
-              className="rounded-full" 
-              width="40" 
-              height="40" 
-            />
-            <div className="text-left text-white">
-              <p className="font-semibold text-sm leading-tight">
-                {userData.name}
-              </p>
-              <p className="text-xs opacity-80 leading-tight">
-                Lihat Profil
-              </p>
-            </div>
-            <i className="fas fa-chevron-right ml-auto opacity-80"></i>
-          </button>
-        </div>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar activeMenu={activeMenu} onMenuClick={handleMenuClick} />
 
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-y-auto">
@@ -218,7 +106,7 @@ export default function DashboardPage() {
         {/* Cards Grid */}
         <section className="w-full max-w-7xl mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
           
-          {/* BMI Card - Updated with navigation */}
+          {/* BMI Card */}
           <div
             className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between"
             style={{ boxShadow: "5px 5px 0 #1E40AF" }}
@@ -248,7 +136,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Calories Card - Same as before */}
+          {/* Calories Card */}
           <div
             className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between"
             style={{ boxShadow: "5px 5px 0 #DC2626" }}
@@ -283,7 +171,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Macronutrients Card - Same as before */}
+          {/* Macronutrients Card */}
           <div
             className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between"
             style={{ boxShadow: "5px 5px 0 #16A34A" }}
@@ -342,14 +230,14 @@ export default function DashboardPage() {
             <i className="fas fa-utensils"></i>
             Catat Makanan
           </button>
-           <button
-              onClick={handleCalculateBMI}
-              className="bg-purple-700 hover:bg-purple-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
-              type="button"
-            >
-              <i className="fas fa-calculator"></i>
-              Hitung BMI Baru
-            </button>
+          <button
+            onClick={handleCalculateBMI}
+            className="bg-purple-700 hover:bg-purple-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
+            type="button"
+          >
+            <i className="fas fa-calculator"></i>
+            Hitung BMI Baru
+          </button>
           <button
             className="bg-green-700 hover:bg-green-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
             type="button"
