@@ -45,6 +45,10 @@ export default function DashboardPage() {
     router.push('/riwayat-bmi')
   }
 
+  const handleCalculateBMI = () => {
+    router.push('/hitung-bmi')
+  }
+
   return (
     <div 
       className="flex min-h-screen"
@@ -329,7 +333,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Action Buttons - Same as before */}
+        {/* Action Buttons */}
         <section className="w-full max-w-7xl mt-10 flex flex-wrap justify-center gap-6">
           <button
             className="bg-blue-700 hover:bg-blue-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
@@ -338,13 +342,14 @@ export default function DashboardPage() {
             <i className="fas fa-utensils"></i>
             Catat Makanan
           </button>
-          <button
-            className="bg-purple-700 hover:bg-purple-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
-            type="button"
-          >
-            <i className="fas fa-calculator"></i>
-            Hitung BMI Baru
-          </button>
+           <button
+              onClick={handleCalculateBMI}
+              className="bg-purple-700 hover:bg-purple-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
+              type="button"
+            >
+              <i className="fas fa-calculator"></i>
+              Hitung BMI Baru
+            </button>
           <button
             className="bg-green-700 hover:bg-green-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
             type="button"

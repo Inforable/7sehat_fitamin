@@ -14,10 +14,15 @@ module.exports = {
         'text-gray': '#6B7280',
         'gradient-start': '#7DB9E8',
         'gradient-end': '#0D6EFD',
+        'dashboard-start': '#8ED0FF',
+        'dashboard-end': '#0B4E9B',
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
       },
+      backdropBlur: {
+        'md': '12px',
+      }
     },
   },
   plugins: [],

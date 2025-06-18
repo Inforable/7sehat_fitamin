@@ -101,7 +101,7 @@ export default function RiwayatBMIPage() {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white border-opacity-30">
           <h1 className="text-2xl font-bold tracking-wide">
-            HealthDash
+            FitAaminn
           </h1>
           <button 
             onClick={handleLogout}
