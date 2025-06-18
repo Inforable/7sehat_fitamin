@@ -45,6 +45,10 @@ export default function DashboardPage() {
     router.push('/hitung-bmi')
   }
 
+  const handleViewMealPlan = () => {
+    router.push('/rencana-makan')
+  }
+
   return (
     <div 
       className="flex min-h-screen"
@@ -104,7 +108,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Cards Grid */}
-        <section className="w-full max-w-7xl mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <section className="w-full max-w-7xl mx-auto mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
           
           {/* BMI Card */}
           <div
@@ -132,7 +136,7 @@ export default function DashboardPage() {
               type="button"
             >
               <i className="fas fa-sync-alt"></i>
-              Lihat Riwayat BMI
+              Riwayat BMI
             </button>
           </div>
 
@@ -163,11 +167,12 @@ export default function DashboardPage() {
               </p>
             </div>
             <button
+              onClick={handleViewMealPlan}
               className="mt-6 bg-red-600 hover:bg-red-700 text-white text-base font-semibold rounded-md py-3 flex items-center justify-center gap-3 transition duration-200"
               type="button"
             >
-              <i className="fas fa-plus-circle"></i>
-              Catat Makanan Baru
+              <i className="fas fa-calendar-alt"></i>
+              Rencana Makan
             </button>
           </div>
 
@@ -222,14 +227,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Action Buttons */}
-        <section className="w-full max-w-7xl mt-10 flex flex-wrap justify-center gap-6">
-          <button
-            className="bg-blue-700 hover:bg-blue-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
-            type="button"
-          >
-            <i className="fas fa-utensils"></i>
-            Catat Makanan
-          </button>
+        <section className="w-full max-w-7xl mx-auto mt-10 flex flex-wrap justify-center gap-6">
           <button
             onClick={handleCalculateBMI}
             className="bg-purple-700 hover:bg-purple-800 text-white text-base font-semibold rounded-md py-4 px-8 flex items-center gap-3 min-w-[160px] transition duration-200"
