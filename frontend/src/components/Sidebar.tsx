@@ -19,7 +19,7 @@ export default function Sidebar({ activeMenu = 'dashboard', onMenuClick }: Sideb
   }
 
   const handleProfileClick = () => {
-    alert('Menuju halaman profil pengguna.')
+    router.push('/profil')
   }
 
   const handleMenuClick = (menu: string) => {
@@ -37,6 +37,9 @@ export default function Sidebar({ activeMenu = 'dashboard', onMenuClick }: Sideb
         break
       case 'hitung-bmi':
         router.push('/hitung-bmi')
+        break
+      case 'pengaturan':
+        router.push('/pengaturan')
         break
       default:
         console.log(`Navigate to ${menu}`)
