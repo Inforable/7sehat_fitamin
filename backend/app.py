@@ -8,6 +8,7 @@ import os
 
 # Import model
 from models.user import User
+from models.bmi import BMI
 
 # Load environment variables
 load_dotenv()
@@ -29,7 +30,8 @@ CORS(app)
 # Initialize user model
 user_model = User(mongo)
 
-# Initialize 
+# Initialize bmi model
+bmi_model = BMI(mongo)
 
 # Test route
 @app.route('/')
@@ -153,6 +155,65 @@ def update_user_profile():
             
     except Exception as e:
         return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
+    
+# Save BMI
+@app.route('/api/bmi/save', methods=['POST'])
+@jwt_required()
+def save_bmi():
+    try:
+        current_user_id = get_jwt_identity()
+        data = request.get_json()
+
+        # Validate input
+        if not data or not data.get('weight') or not data.get('height'):
+            return jsonify({'success': False, 'message': 'Invalid input'}), 400
+        
+        # Save BMI
+        result = bmi_model.save_bmi(
+            user_id=current_user_id,
+            weight=data['weight'],
+            height=data['height'],
+            notes=data.get('notes', '')
+        )
+
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
+
+# Get BMI history
+@app.route('/api/bmi/history', methods=['GET'])
+@jwt_required()
+def get_bmi_history():
+    try:
+        current_user_id = get_jwt_identity()
+        result = bmi_model.get_user_bmi_history(current_user_id)
+        
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 404
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
+
+# Get Latest BMI
+@app.route('/api/bmi/latest', methods=['GET'])
+@jwt_required()
+def get_latest_bmi():
+    try:
+        current_user_id = get_jwt_identity()
+        result = bmi_model.get_latest_bmi(current_user_id)
+        
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 404
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
 
 # ====================== TEST SECTION ======================
 
@@ -234,6 +295,25 @@ def test_list_users():
         for user in users:
             user['_id'] = str(user['_id'])
         return jsonify({'success': True, 'users': users})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# Test Save BMI
+@app.route('/test-bmi')
+def test_bmi():
+    try:
+        # Test calculate BMI
+        bmi, status = bmi_model.calculate_bmi(70, 170)
+        
+        return jsonify({
+            'success': True,
+            'test_data': {
+                'weight': 70,
+                'height': 170,
+                'bmi': bmi,
+                'status': status
+            }
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
