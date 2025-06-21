@@ -21,7 +21,7 @@ export default function RegisterPage() {
     
     // Validasi password match
     if (password !== confirmPassword) {
-      alert('Password dan Konfirmasi Password tidak sama!')
+      setError('Password dan Konfirmasi Password tidak sama!')
       setIsLoading(false)
       return
     }
@@ -54,7 +54,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gradient-start to-gradient-end px-4">
-      <div className="bg-white rounded-lg shadow-md w-full max-w-sm py-10 px-8 text-center">
+      <div className="bg-white rounded-lg shadow-md w-full max-w-md py-10 px-10 text-center">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="bg-primary w-12 h-12 rounded-full flex items-center justify-center shadow-md">
@@ -71,6 +71,13 @@ export default function RegisterPage() {
         <p className="text-text-gray text-xs mb-8">
           Bergabung dan raih potensimu bersama FitAaminn!
         </p>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
