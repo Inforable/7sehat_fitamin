@@ -38,9 +38,6 @@ export default function Sidebar({ activeMenu = 'dashboard', onMenuClick }: Sideb
       case 'hitung-bmi':
         router.push('/hitung-bmi')
         break
-      case 'pengaturan':
-        router.push('/pengaturan')
-        break
       default:
         console.log(`Navigate to ${menu}`)
     }
@@ -114,18 +111,6 @@ export default function Sidebar({ activeMenu = 'dashboard', onMenuClick }: Sideb
         >
           <i className="fas fa-running text-lg"></i>
           <span>Aktivitas</span>
-        </button>
-        
-        <button
-          onClick={() => handleMenuClick('pengaturan')}
-          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            activeMenu === 'pengaturan' 
-              ? 'bg-white bg-opacity-30 font-semibold shadow-md' 
-              : 'hover:bg-white hover:bg-opacity-20'
-          }`}
-        >
-          <i className="fas fa-cog text-lg"></i>
-          <span>Pengaturan</span>
         </button>
       </nav>
 
