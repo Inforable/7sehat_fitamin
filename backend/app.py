@@ -142,7 +142,7 @@ def update_user_profile():
         if 'targetWeight' in data and (not isinstance(data['targetWeight'], (int, float)) or data['targetWeight'] < 30 or data['targetWeight'] > 300):
             return jsonify({'success': False, 'message': 'Target berat tidak valid (30-300 kg)'}), 400
         
-        result = user_model.update_profile(current_user_id, data)
+        result = user_model.update_user_profile(current_user_id, data)
         
         if result['success']:
             return jsonify(result), 200

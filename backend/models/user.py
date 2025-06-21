@@ -144,9 +144,9 @@ class User:
                         'fitnessGoal': user_data.get('fitnessGoal'),
                         'bmi': round(bmi, 1) if bmi else None,
                         'bmi_status': bmi_status,
-                        'joinDate': user_data.get('created_at'),
-                        'created_at': user_data.get('created_at'),
-                        'updated_at': user_data.get('updated_at')
+                        'joinDate': user_data.get('created_at').isoformat() if user_data.get('created_at') else None, 
+        'created_at': user_data.get('created_at').isoformat() if user_data.get('created_at') else None, 
+        'updated_at': user_data.get('updated_at').isoformat() if user_data.get('updated_at') else None 
                     }
                 }
             else:

@@ -153,15 +153,20 @@ export default function ProfilPage() {
   }
 
   const formatJoinDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A'
+  if (!dateString) return 'N/A'
     try {
-      return new Date(dateString).toLocaleDateString('id-ID', {
+      // Add better date parsing
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date'
+      }
+      return date.toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       })
     } catch {
-      return 'N/A'
+      return 'Invalid Date'
     }
   }
 
