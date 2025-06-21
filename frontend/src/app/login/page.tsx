@@ -3,30 +3,53 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ApiClient from '../../lib/api'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // Simulate login process
+    setError('');
+
     try {
-      // Handle login logic
-      console.log('Login attempt:', { email, password })
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Redirect to dashboard after successful login
-      router.push('/dashboard')
+      console.log('Sending login request...') // debugging
+      const result = await ApiClient.login(formData)
+
+      console.log('login result:', result) // debugging
+
+      if (result.success) {
+        console.log('Login successful, saving token and user data...') 
+        
+        try {
+          // Backend return structure: {success: true, token: "...", user: {...}}
+          localStorage.setItem('token', result.token)
+          localStorage.setItem('user', JSON.stringify(result.user))
+          
+          console.log('Redirecting to dashboard...') 
+          router.push('/dashboard')
+          
+        } catch (error) {
+          console.error('Storage/redirect error:', error)
+          setError('Login berhasil tapi terjadi kesalahan. Silakan refresh halaman.')
+        }
+      }
     } catch (error) {
-      console.error('Login failed:', error)
-      alert('Login gagal! Silakan coba lagi.')
+      setError('Terjadi kesalahan saat login. Silakan coba lagi.')
     } finally {
       setIsLoading(false)
     }
@@ -54,50 +77,55 @@ export default function LoginPage() {
         <p className="text-text-gray text-xs mb-8">Selamat Datang di FitAaminn!</p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            required
-            aria-label="Email"
-            disabled={isLoading}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            required
-            aria-label="Password"
-            disabled={isLoading}
-          />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Masukkan email Anda"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Masukkan password Anda"
+              required
+            />
+          </div>
+
           <button
             type="submit"
-            className="bg-primary text-white text-sm font-semibold rounded-md w-full py-2 hover:bg-primary-hover transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
           >
-            {isLoading ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                Loading...
-              </>
-            ) : (
-              'Login'
-            )}
+            {isLoading ? 'Memproses...' : 'Masuk'}
           </button>
         </form>
 
         {/* Register Link */}
-        <p className="text-primary text-xs mt-4">
-          Belum punya akun?{' '}
-          <Link href="/register" className="font-semibold underline hover:text-primary-hover">
-            Daftar di sini
-          </Link>
-        </p>
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">
+            Belum punya akun?{' '}
+            <Link href="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
+              Daftar di sini
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

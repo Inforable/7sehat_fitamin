@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ApiClient from '../../lib/api'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -10,11 +11,13 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
     
     // Validasi password match
     if (password !== confirmPassword) {
@@ -23,18 +26,27 @@ export default function RegisterPage() {
       return
     }
 
-    try {
-      // Handle register logic
-      console.log('Register attempt:', { fullName, email, password })
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Redirect to dashboard after successful registration
-      router.push('/dashboard')
+     try {
+      // Call API register
+      const result = await ApiClient.register({
+        name: fullName,
+        email: email,
+        password: password
+      })
+
+      if (result.success) {
+        // save token and user data to localStorage
+        localStorage.setItem('token', result.token)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        // redirect to dashboard
+        router.push('/dashboard')
+      } else {
+        setError(result.message || 'Registrasi gagal! Silakan coba lagi.')
+      }
     } catch (error) {
       console.error('Registration failed:', error)
-      alert('Pendaftaran gagal! Silakan coba lagi.')
+      setError('Terjadi kesalahan saat registrasi. Silakan coba lagi.')
     } finally {
       setIsLoading(false)
     }
@@ -110,7 +122,7 @@ export default function RegisterPage() {
             {isLoading ? (
               <>
                 <i className="fas fa-spinner fa-spin"></i>
-                Loading...
+                Mendaftar...
               </>
             ) : (
               'Daftar'

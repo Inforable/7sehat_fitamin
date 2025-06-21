@@ -45,8 +45,11 @@ def test_db():
         return {'success': False, 'error': str(e)}
 
 # Register user
-@app.route('/api/auth/register', methods=['POST'])
+@app.route('/api/auth/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'GET':
+        return jsonify({'message': 'Register endpoint ready', 'method': 'POST'})
+    
     try:
         data = request.get_json()
 
@@ -70,8 +73,11 @@ def register():
         return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
     
 # Login user
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return jsonify({'message': 'Login endpoint ready', 'method': 'POST'})
+    
     try:
         data = request.get_json()
 
