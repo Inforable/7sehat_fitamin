@@ -1,19 +1,126 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Sidebar from '../../components/Sidebar'
+import ApiClient from '../../lib/api'
+
+interface UserProfile {
+  id: string
+  name: string
+  email: string
+  age: number | null
+  gender: string | null
+  height: number | null
+  currentWeight: number | null
+  targetWeight: number | null
+  fitnessGoal: string | null
+  bmi: number | null
+  bmi_status: string | null
+}
 
 export default function DashboardPage() {
   const router = useRouter()
   const [activeMenu, setActiveMenu] = useState('dashboard')
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
+  const [currentTime, setCurrentTime] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Placeholder user data
+  // Get current user from backend and time
+  useEffect(() => {
+    fetchUserProfile()
+    
+    // Update time
+    const updateTime = () => {
+      const now = new Date()
+      const hours = now.getHours()
+      let greeting = ''
+      
+      if (hours < 12) {
+        greeting = 'Selamat Pagi'
+      } else if (hours < 15) {
+        greeting = 'Selamat Siang'
+      } else if (hours < 18) {
+        greeting = 'Selamat Sore'
+      } else {
+        greeting = 'Selamat Malam'
+      }
+      
+      setCurrentTime(`${greeting}, ${now.toLocaleDateString('id-ID', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`)
+    }
+    
+    updateTime()
+    const interval = setInterval(updateTime, 60000) // Update every minute
+    
+    return () => clearInterval(interval)
+  }, [])
+
+  const fetchUserProfile = async () => {
+    try {
+      const result = await ApiClient.getUserProfile()
+      
+      if (result.success) {
+        setCurrentUser(result.user)
+        // Also save name to localStorage for offline usage
+        localStorage.setItem('userName', result.user.name)
+      } else {
+        // If token invalid, redirect to login
+        if (result.message?.includes('token') || result.message?.includes('authorization')) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          localStorage.removeItem('userName')
+          router.push('/login')
+          return
+        }
+        // Fallback to localStorage if API fails
+        const savedName = localStorage.getItem('userName') || 'Pengguna'
+        setCurrentUser({ 
+          id: '', 
+          name: savedName, 
+          email: '', 
+          age: null, 
+          gender: null, 
+          height: null, 
+          currentWeight: null, 
+          targetWeight: null, 
+          fitnessGoal: null,
+          bmi: null,
+          bmi_status: null
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+      // Fallback to localStorage
+      const savedName = localStorage.getItem('userName') || 'Pengguna'
+      setCurrentUser({ 
+        id: '', 
+        name: savedName, 
+        email: '', 
+        age: null, 
+        gender: null, 
+        height: null, 
+        currentWeight: null, 
+        targetWeight: null, 
+        fitnessGoal: null,
+        bmi: null,
+        bmi_status: null
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // User data for display
   const userData = {
-    name: "Nama Pengguna",
+    name: currentUser?.name || "Nama Pengguna",
     bmi: {
-      value: 22.4,
-      status: "Normal",
+      value: currentUser?.bmi || 22.4,
+      status: currentUser?.bmi_status || "Normal",
       lastUpdate: "27 April 2024"
     },
     calories: {
@@ -29,7 +136,7 @@ export default function DashboardPage() {
   }
 
   const handleProfileClick = () => {
-    alert('Menuju halaman profil pengguna.')
+    router.push('/profil')
   }
 
   const handleMenuClick = (menu: string) => {
@@ -52,6 +159,22 @@ export default function DashboardPage() {
     router.push('/rekomendasi-makanan')
   }
 
+  if (isLoading) {
+    return (
+      <div 
+        className="flex h-screen items-center justify-center"
+        style={{
+          background: "linear-gradient(135deg, #8ED0FF 0%, #0B4E9B 60%, #0A3A6B 100%)",
+        }}
+      >
+        <div className="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-2xl p-6 shadow-xl">
+          <i className="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
+          <span className="text-gray-600 font-medium">Memuat dashboard...</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div 
       className="flex min-h-screen"
@@ -65,47 +188,79 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-y-auto">
-        {/* Header Card */}
+        {/* Enhanced Header Card */}
         <div 
-          className="w-full max-w-7xl mx-auto bg-white bg-opacity-80 backdrop-blur-md rounded-xl p-4 md:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 md:gap-6"
+          className="w-full max-w-7xl mx-auto bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-md rounded-2xl p-4 md:p-5 shadow-xl border border-white/20"
           style={{ marginTop: "0.75rem" }}
         >
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleProfileClick}
-              className="bg-white bg-opacity-90 rounded-full p-2 flex items-center justify-center hover:bg-opacity-100 transition"
-              style={{ width: "48px", height: "48px" }}
-              title="Profil pengguna"
-              aria-label="Profil pengguna"
-            >
-              <i className="fas fa-user-circle text-gray-600 text-2xl"></i>
-            </button>
-            <p className="text-gray-900 font-semibold text-base leading-tight max-w-xs">
-              Halo,{' '}
-              <button 
-                onClick={handleProfileClick}
-                className="text-blue-700 font-semibold hover:underline"
-              >
-                {userData.name}
-              </button>
-              !<br />
-              <span className="text-gray-700 text-sm font-normal leading-tight">
-                Selamat datang kembali di dashboard kesehatan Anda.
-              </span>
-            </p>
-          </div>
-          <div className="flex gap-6 md:gap-10 text-center text-sm font-semibold text-gray-900">
-            <div className="flex flex-col items-center gap-1 cursor-pointer hover:text-red-600 transition-colors">
-              <i className="fas fa-heart text-red-600 text-xl md:text-2xl"></i>
-              <span className="text-xs md:text-sm">Kesehatan</span>
+          {/* Compact Header Section */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {/* Compact Profile Avatar */}
+              <div className="relative">
+                <button 
+                  onClick={handleProfileClick}
+                  className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-3 flex items-center justify-center hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg transform hover:scale-105"
+                  style={{ width: "48px", height: "48px" }}
+                  title="Klik untuk ke halaman profil"
+                  aria-label="Profil pengguna"
+                >
+                  <i className="fas fa-user text-white text-lg"></i>
+                </button>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <i className="fas fa-check text-white text-xs"></i>
+                </div>
+              </div>
+              
+              {/* Compact Welcome Message */}
+              <div className="flex-1">
+                <h1 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+                  Halo,{' '}
+                  <button 
+                    onClick={handleProfileClick}
+                    className="text-blue-700 hover:text-blue-800 hover:underline transition-colors cursor-pointer"
+                    title="Klik untuk ke halaman profil"
+                  >
+                    {userData.name}
+                  </button>
+                  !
+                </h1>
+                <p className="text-gray-600 text-xs md:text-sm font-medium">
+                  {currentTime}
+                </p>
+                {currentUser?.email && (
+                  <p className="text-gray-500 text-xs">
+                    {currentUser.email}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col items-center gap-1 cursor-pointer hover:text-green-600 transition-colors">
-              <i className="fas fa-apple-alt text-green-600 text-xl md:text-2xl"></i>
-              <span className="text-xs md:text-sm">Nutrisi</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 cursor-pointer hover:text-blue-600 transition-colors">
-              <i className="fas fa-running text-blue-600 text-xl md:text-2xl"></i>
-              <span className="text-xs md:text-sm">Aktivitas</span>
+
+            {/* Compact Quick Stats */}
+            <div className="flex gap-4 lg:gap-5">
+              <div className="text-center">
+                <div className="bg-gradient-to-br from-red-500 to-pink-600 w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center mx-auto mb-1 shadow-lg">
+                  <i className="fas fa-heart text-white text-sm md:text-base"></i>
+                </div>
+                <span className="text-xs font-semibold text-gray-700">Kesehatan</span>
+                <p className="text-xs text-gray-500">{userData.bmi.status}</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-gradient-to-br from-green-500 to-emerald-600 w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center mx-auto mb-1 shadow-lg">
+                  <i className="fas fa-apple-alt text-white text-sm md:text-base"></i>
+                </div>
+                <span className="text-xs font-semibold text-gray-700">Nutrisi</span>
+                <p className="text-xs text-gray-500">{userData.calories.percentage}%</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-gradient-to-br from-blue-500 to-cyan-600 w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center mx-auto mb-1 shadow-lg">
+                  <i className="fas fa-running text-white text-sm md:text-base"></i>
+                </div>
+                <span className="text-xs font-semibold text-gray-700">Aktivitas</span>
+                <p className="text-xs text-gray-500">Aktif</p>
+              </div>
             </div>
           </div>
         </div>
@@ -132,7 +287,10 @@ export default function DashboardPage() {
                   {userData.bmi.status}
                 </p>
                 <p className="text-gray-600 text-xs md:text-sm mt-1 leading-tight">
-                  Terakhir diupdate: {userData.bmi.lastUpdate}
+                  {currentUser?.height && currentUser?.currentWeight ? 
+                    `Berdasarkan tinggi ${currentUser.height} cm dan berat ${currentUser.currentWeight} kg` :
+                    `Terakhir diupdate: ${userData.bmi.lastUpdate}`
+                  }
                 </p>
               </div>
               <button
