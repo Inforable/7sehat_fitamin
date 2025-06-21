@@ -99,19 +99,19 @@ def login():
     except Exception as e:
         return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
 
-# Get full user profile
-@app.route('/api/auth/profile', methods=['GET'])
+# Get user profile
+@app.route('/api/user/profile', methods=['GET'])
 @jwt_required()
-def get_full_profile():
+def get_user_profile():
     try:
         current_user_id = get_jwt_identity()
-        user = user_model.get_full_user_profile(current_user_id)
-
-        if user:
-            return jsonify({'success': True, 'user': user}), 200
+        result = user_model.get_user_profile(current_user_id)
+        
+        if result['success']:
+            return jsonify(result), 200
         else:
-            return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
-    
+            return jsonify(result), 404
+            
     except Exception as e:
         return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
 
@@ -198,7 +198,7 @@ def test_profile():
 
 # Test Update Profile (no auth)
 @app.route('/test-update-profile')
-def test_update_profile_no_auth():
+def test_update_profile():
     try:
         # Ambil user pertama dari database untuk test
         test_user = mongo.db.users.find_one()
@@ -218,7 +218,7 @@ def test_update_profile_no_auth():
             'fitnessGoal': 'Menurunkan Berat'
         }
         
-        result = user_model.update_profile(user_id, test_data)
+        result = user_model.update_user_profile(user_id, test_data)
         return jsonify(result)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})

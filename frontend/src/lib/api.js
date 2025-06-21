@@ -36,14 +36,42 @@ class ApiClient {
     }
 
     // Get User Profile
-    static async getProfile(token) {
+    static async getUserProfile() {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            const token = localStorage.getItem('token')
+            if (!token) {
+                return {success: false, message: 'No token found'}
+            }
+
+            const response = await fetch(`${API_BASE_URL}/user/profile`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 }
+            })
+
+            return await response.json();
+        } catch (error) {
+            return {success: false, message: 'Network error'}
+        }
+    }
+
+    // Update User Profile
+    static async updateUserProfile(profileData) {
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) {
+                return {success: false, message: 'No token found'}
+            }
+
+            const response = await fetch(`${API_BASE_URL}/user/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(profileData)
             })
 
             return await response.json();
